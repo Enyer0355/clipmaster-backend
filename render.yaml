@@ -1,0 +1,28 @@
+# Render Blueprint for the ClipMaster AI external FFmpeg processor.
+# Deploy: Render Dashboard -> New -> Blueprint -> select the repo containing
+# this file. Render will prompt for the `sync: false` values below.
+#
+# After deploy, copy the service URL (e.g. https://clipmaster-processor.onrender.com)
+# into Vercel as VIDEO_PROCESSING_BACKEND_URL (project: clipmaster-ai),
+# then redeploy clipmaster-ai to production.
+services:
+  - type: web
+    name: clipmaster-processor
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    # Closest Render region to the Supabase project (us-east-1).
+    region: virginia
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Groq API key for Whisper transcription (free tier, no card).
+      # Get one at https://console.groq.com/keys
+      - key: GROQ_API_KEY
+        sync: false
+      # Optional shared secret. MUST match the PROCESSING_API_KEY value
+      # set in Vercel, otherwise the app's calls will be rejected (401).
+      # Leave empty on both sides to run without auth.
+      - key: PROCESSING_API_KEY
+        sync: false
